@@ -1,0 +1,20 @@
+{
+  "name": "roomy-streamplace-event-bridge",
+  "module": "main.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun main.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@atcute/jetstream": "^1.1.2",
+    "@roomy-space/sdk": "^0.3.1",
+    "arktype": "^2.2.0"
+  }
+}
