@@ -1,12 +1,8 @@
 import { sleep } from "bun";
-import type { ConferenceEvent } from "./calendarEventLoader";
+import { STREAM_ROOM_MAP, type ConferenceEvent } from "./calendarEventLoader";
 import type { RoomySink } from "./roomy";
 import { getMessages } from "./indexer";
 import { Did, Event, newUlid, toBytes } from "@roomy-space/sdk";
-
-const STREAM_ROOM_MAP: Record<string, string> = {
-  "zicklag's room": "did:plc:ulg2bzgrgs7ddjjlmhtegk3v",
-};
 
 export async function startImporter(
   roomy: RoomySink,
@@ -21,19 +17,35 @@ async function startEventImportTask(roomy: RoomySink, event: ConferenceEvent) {
   // Identify the stream based on the event room name
   const stream = STREAM_ROOM_MAP[event.additionalData.room];
 
-  // Warn if there is no stream to import messages from.
-  if (!stream) {
+  // Warn if this isn't a virtual / hybrid event
+  if (
+    event.mode != "community.lexicon.calendar.event#hybrid" &&
+    event.mode != "community.lexicon.calendar.event#virtual"
+  ) {
     console.warn(
-      `Could not identify the stream associated to the room "${event.additionalData.room}" for the event "${event.name}"\n\n\
-The thread will be created but events will not be imported from stream.`,
+      `In person event will not have chats imported: "${event.name}"`,
     );
+  } else if (!stream) {
+    // Warn if there is no stream to import messages from.
+    console.warn(
+      `Could not identify the stream associated to the room "${event.additionalData.room}" for the event "${event.name}" \n\
+    The thread will be created but events will not be imported from stream.`,
+    );
+  }
+
+  // Skip this event if it is already past the time for it
+  if (event.endsAt.getTime() < Date.now()) {
+    console.warn(
+      `Event "${event.name}" is in the past, so assuming it has already been imported and skipping import`,
+    );
+    return;
   }
 
   // Wait until the event is over
   await sleep(event.endsAt);
 
   // Get all the messages from the event
-  if (stream) console.log(`Importing messages for event: "${event.name}"`);
+  console.log(`Importing messages for event: "${event.name}"`);
   const messages = stream
     ? getMessages({
         start: event.startsAt.getTime(),
@@ -79,4 +91,7 @@ The thread will be created but events will not be imported from stream.`,
       },
     });
   }
+
+  await roomy.sendEvents(events);
+  console.log(`Done importing messages for event: "${event.name}"`);
 }

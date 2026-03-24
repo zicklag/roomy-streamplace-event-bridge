@@ -2,13 +2,26 @@ import { Agent } from "@atproto/api";
 import { type } from "arktype";
 
 const ATMOSPHERE_CONF_DID = "did:plc:3xewinw4wtimo2lqfy5fm5sw";
+const STREAM1_DID = "did:plc:7tattzlorncahxgtdiuci7x7";
+const STREAM2_DID = "did:plc:djb6ssvz5wvuuqpdihlgh3xa";
+const STREAM3_DID = "did:plc:jcahd7fl7h23c24ftxuhkhiw";
+
 const ZICKLAG_DID = "did:plc:ulg2bzgrgs7ddjjlmhtegk3v";
 
-const DID = ZICKLAG_DID;
+const DID = ATMOSPHERE_CONF_DID;
+
+export const STREAM_ROOM_MAP: Record<string, string> = {
+  "zicklag's room": "did:plc:2zmxikig2sj7gqaezl5gntae",
+  // Conference rooms & streams
+  "Great Hall South": STREAM1_DID,
+  "Performance Theatre": STREAM2_DID,
+  "Room 2301": STREAM3_DID,
+};
 
 export const ConferenceEvent = type({
   $type: "'community.lexicon.calendar.event'",
   name: "string",
+  mode: "'community.lexicon.calendar.event#hybrid' | 'community.lexicon.calendar.event#inperson' | 'community.lexicon.calendar.event#virtual'",
   endsAt: "string.date.parse",
   startsAt: "string.date.parse",
   additionalData: type({

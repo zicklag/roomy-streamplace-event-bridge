@@ -4,7 +4,9 @@ import { JetstreamSubscription } from "@atcute/jetstream";
 import { STREAMPLACE_CHAT_NSID, StreamplaceMessage } from "./streamplace";
 import { type } from "arktype";
 
-const db = new Database("indexer.db");
+const DATA_DIR = process.env.DATA_DIR || process.cwd();
+
+const db = new Database(`${DATA_DIR}/indexer.db`);
 
 db.run(`
   -- Table containing all of the 'place.stream.chat.message' records that we
