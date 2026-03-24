@@ -1,6 +1,8 @@
 import { Database } from "bun:sqlite";
 
 import { JetstreamSubscription } from "@atcute/jetstream";
+import { STREAMPLACE_CHAT_NSID, StreamplaceMessage } from "./streamplace";
+import { type } from "arktype";
 
 const db = new Database("indexer.db");
 
@@ -27,7 +29,7 @@ export async function startIndexer() {
   // Subscribe to all streamplace chats
   const subscription = new JetstreamSubscription({
     url: "wss://jetstream2.us-east.bsky.network",
-    wantedCollections: ["place.stream.chat.message"],
+    wantedCollections: [STREAMPLACE_CHAT_NSID],
   });
 
   for await (const event of subscription) {
@@ -65,4 +67,41 @@ export async function startIndexer() {
       console.error("Error indexing streamplace message");
     }
   }
+}
+
+type Message = {
+  author: string;
+  timestamp: number;
+} & StreamplaceMessage;
+
+export function getMessages({
+  start,
+  end,
+  stream,
+}: {
+  start: number;
+  end: number;
+  stream: string;
+}): Message[] {
+  const stmt = db.query(
+    `
+      select record, id, timestamp from chat_messages
+      where
+        timestamp > ?
+          and
+        timestamp < ?
+          and
+        stream = ?
+    `,
+  );
+  return stmt.all(start, end, stream).flatMap((row) => {
+    const r = row as { id: string; record: string; timestamp: number };
+    const did = r.id.split("/")[0];
+    if (!did) return [];
+    const msg = StreamplaceMessage(JSON.parse(r.record));
+    if (msg instanceof type.errors) {
+      return [];
+    }
+    return [{ ...msg, author: did, timestamp: r.timestamp }];
+  });
 }
