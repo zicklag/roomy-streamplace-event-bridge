@@ -8,7 +8,7 @@ const STREAM3_DID = "did:plc:jcahd7fl7h23c24ftxuhkhiw";
 
 const ZICKLAG_DID = "did:plc:ulg2bzgrgs7ddjjlmhtegk3v";
 
-const DID = ATMOSPHERE_CONF_DID;
+const DID = process.env.EVENTS_DID || ATMOSPHERE_CONF_DID;
 
 export const STREAM_ROOM_MAP: Record<string, string> = {
   "zicklag's room": "did:plc:2zmxikig2sj7gqaezl5gntae",
