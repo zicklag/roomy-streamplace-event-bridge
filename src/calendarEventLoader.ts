@@ -83,7 +83,7 @@ export async function loadAtmosphereConfEvents(): Promise<ConferenceEvent[]> {
         if (event instanceof type.errors) return [];
 
         // Add 15 minute overrun to capture chats that run past official end time.
-        event.endsAt = new Date(event.endsAt.getTime() + 1000 * 60 * 15);
+        event.endsAt = new Date(event.endsAt.getTime() + 1000 * 60 * 20);
 
         // Return the event
         return [event];
