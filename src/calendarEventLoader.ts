@@ -13,10 +13,16 @@ const DID = process.env.EVENTS_DID || ATMOSPHERE_CONF_DID;
 export const STREAM_ROOM_MAP: Record<string, string> = {
   "zicklag's room": "did:plc:2zmxikig2sj7gqaezl5gntae",
   // Conference rooms & streams
+
+  // Friday
   "Performance Theatre": STREAM1_DID,
   "Performance Theater": STREAM1_DID,
-  "Great Hall South": STREAM2_DID,
-  "Room 2301": STREAM3_DID,
+
+  // Sun - Saturday
+  // "Great Hall South": STREAM1_DID,
+  // "Performance Theatre": STREAM2_DID,
+  // "Performance Theater": STREAM2_DID,
+  // "Room 2301": STREAM3_DID,
 };
 
 export const ConferenceEvent = type({
@@ -75,6 +81,9 @@ export async function loadAtmosphereConfEvents(): Promise<ConferenceEvent[]> {
 
         // Skip unparsable events, which will also skip non-conference events.
         if (event instanceof type.errors) return [];
+
+        // Add 15 minute overrun to capture chats that run past official end time.
+        event.endsAt = new Date(event.endsAt.getTime() + 1000 * 60 * 15);
 
         // Return the event
         return [event];
