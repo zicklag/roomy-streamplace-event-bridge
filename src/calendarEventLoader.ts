@@ -15,6 +15,7 @@ export const STREAM_ROOM_MAP: Record<string, string> = {
   // Conference rooms & streams
   "Great Hall South": STREAM1_DID,
   "Performance Theatre": STREAM2_DID,
+  "Performance Theater": STREAM2_DID,
   "Room 2301": STREAM3_DID,
 };
 
