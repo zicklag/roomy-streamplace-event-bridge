@@ -13,9 +13,9 @@ const DID = process.env.EVENTS_DID || ATMOSPHERE_CONF_DID;
 export const STREAM_ROOM_MAP: Record<string, string> = {
   "zicklag's room": "did:plc:2zmxikig2sj7gqaezl5gntae",
   // Conference rooms & streams
-  "Great Hall South": STREAM1_DID,
-  "Performance Theatre": STREAM2_DID,
-  "Performance Theater": STREAM2_DID,
+  "Performance Theatre": STREAM1_DID,
+  "Performance Theater": STREAM1_DID,
+  "Great Hall South": STREAM2_DID,
   "Room 2301": STREAM3_DID,
 };
 
